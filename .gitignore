@@ -1,0 +1,12 @@
+# Fichiers chiffrés / déchiffrés (produits par les ateliers)
+*.enc
+*.dec.txt
+secret.txt
+
+# Clés
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.env
