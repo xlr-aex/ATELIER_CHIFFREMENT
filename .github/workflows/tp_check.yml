@@ -1,0 +1,40 @@
+name: TP Chiffrement Verification
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          
+      - name: Run Atelier 1 (Fernet with Secret)
+        env:
+          # On simule un secret pour la démo, en vrai il viendrait de ${{ secrets.FERNET_KEY }}
+          FERNET_KEY: "MvbHzhA78HZW_uvAWpgznsaGOQgUK_wci6RbTlWBQ58="
+        run: |
+          echo "Test Secret CI" > test_ci.txt
+          python app/fernet_atelier1.py encrypt test_ci.txt test_ci.enc
+          python app/fernet_atelier1.py decrypt test_ci.enc test_ci.dec.txt
+          cat test_ci.dec.txt
+          
+      - name: Run Atelier 2 (PyNaCl)
+        env:
+          NACL_SECRET_KEY: "6d913b553d1d194685d428ff58b1bc8d759e2a3c0d0bfcb6d8430f49c49d109c"
+        run: |
+          echo "Test PyNaCl CI" > test_nacl.txt
+          python app/nacl_atelier2.py encrypt test_nacl.txt test_nacl.enc
+          python app/nacl_atelier2.py decrypt test_nacl.enc test_nacl.dec.txt
+          cat test_nacl.dec.txt
